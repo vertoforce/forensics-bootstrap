@@ -1,12 +1,10 @@
-# Forensics workspace boostrap
+# Forensics workspace bootsrap
 
-## Abstract
-
-### Problem
+**Problem**
 
 Creating and managing a complex full forensics lab is complex and difficult.
 
-### Solution
+**Solution**
 
 A docker based forensics lab that can be brought up in one command and will provide lots of forensics tools in an isolated environment
 
@@ -53,4 +51,4 @@ Access at localhost:9222
 
 To manage docker images
 
-portainer.localhost
+portainer.localhos
