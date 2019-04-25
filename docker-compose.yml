@@ -9,7 +9,7 @@ services:
     ports:
       - "80:80"   # The HTTP port
       - "443:443"   # The HTTPS port
-      - "8080:8080" # The Web UI (enabled by --api)
+      - "8080" # The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/${TRAEFIK_CONFIG:-traefik_dev.toml}:/traefik.toml
@@ -21,37 +21,52 @@ services:
     image: vertoforce/forensics-base
     command: tail -f /dev/null
     build: forensics_base
+    volumes:
+      - isolated-files:/isolated-files
+      - ./data:/data
     networks:
       - master
+  
+  firefox:
+    build: firefox
+    ports:
+      - "2255:22"
+    image: vertoforce/firefox-forensics
     volumes:
-      - .:/data
+      - isolated-files:/isolated-files
+      - ./data:/data
+    networks:
+      - master
 
   # Zed attack proxy usable in web browser
   # https://github.com/zaproxy/zaproxy/wiki/WebSwing
   zap:
     image: owasp/zap2docker-stable
+    volumes:
+      - isolated-files:/isolated-files
+      - ./data:/data
     ports:
       - 8080:8080
-      - 8090:8090
+      - 8090
     command: zap-webswing.sh
     networks:
       - master
 
   # EveBox
   # Web frontend to manage events generateed by Suricata
-  evebox:
-    image: jasonish/evebox
-    ports:
-      - 5636
-    networks:
-      - master
-    command: -e http://elasticsearch:9200
-    labels:
-      - "traefik.backend=evebox"
-      - "traefik.docker.network=${network_name:-masternetwork}"
-      - "traefik.frontend.rule=Host:evebox.${BASE_URL:-localhost}" # add another rule with ";Host:host"
-      - "traefik.enable=true"
-      - "traefik.port=5636"
+  # evebox:
+  #   image: jasonish/evebox
+  #   ports:
+  #     - 5636
+  #   networks:
+  #     - master
+  #   command: -e http://elasticsearch:9200
+  #   labels:
+  #     - "traefik.backend=evebox"
+  #     - "traefik.docker.network=${network_name:-masternetwork}"
+  #     - "traefik.frontend.rule=Host:evebox.${BASE_URL:-localhost}" # add another rule with ";Host:host"
+  #     - "traefik.enable=true"
+  #     - "traefik.port=5636"
 
   chrome:
     image: alpeware/chrome-headless-trunk
@@ -75,81 +90,99 @@ services:
       - "traefik.enable=true"
       - "traefik.port=9000"
 
-  # -- ELK --
-  elasticsearch:
-    image: library/elasticsearch:6.5.0
-    volumes:
-      # for persistent data
-      - ./elasticsearch-data:/usr/share/elasticsearch/data
-      - ./elk_config/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+  droppy:
+    image: silverwind/droppy
     ports:
-      - 9200:9200
-      - 9300
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - master
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1G
-
-  logstash:
-    image: library/logstash:6.5.0
+      - 8989
     volumes:
-      - ./suricata-log:/var/log/suricata # To get and parse suricata-logs
-      - ./elk_config/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./elk_config/logstash/pipeline:/usr/share/logstash/pipeline:ro
-    ports:
-      - 5000/udp
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      # - ./config:./config
+      - isolated-files:/files/isolated-files
+      - ./data:/files/data
+    restart: unless-stopped
     networks:
       - master
-    depends_on:
-      - elasticsearch
-    deploy:
-      restart_policy:
-        condition: on-failure
-
-  logspout:
-    image: bekt/logspout-logstash
-    environment:
-      ROUTE_URIS: 'logstash://logstash:5000'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - logstash
-      - elasticsearch
-    deploy:
-      restart_policy:
-        condition: any
-        delay: 10s
-    networks:
-      - master
-    restart: on-failure
-
-  kibana:
-    image: library/kibana:6.5.0
-    volumes:
-      - ./elk_config/kibana/config/:/usr/share/kibana/config:ro
-    ports:
-      - 5601
-    networks:
-      - master
-    depends_on:
-      - elasticsearch
-    deploy:
-      restart_policy:
-        condition: on-failure
     labels:
-      - "traefik.backend=kibana"
+      - "traefik.backend=droppy"
       - "traefik.docker.network=${network_name:-masternetwork}"
-      - "traefik.frontend.rule=Host:kibana.${BASE_URL:-localhost}" # add another rule with ";Host:host"
+      - "traefik.frontend.rule=Host:droppy.${BASE_URL:-localhost}" # add another rule with ";Host:host"
       - "traefik.enable=true"
-      - "traefik.port=5601"
+      - "traefik.port=8989"
+
+  # # -- ELK --
+  # elasticsearch:
+  #   image: library/elasticsearch:6.5.0
+  #   volumes:
+  #     # for persistent data
+  #     - ./elasticsearch-data:/usr/share/elasticsearch/data
+  #     - ./elk_config/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+  #   ports:
+  #     - 9200:9200
+  #     - 9300
+  #   environment:
+  #     ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #   networks:
+  #     - master
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #     resources:
+  #       limits:
+  #         memory: 1G
+
+  # logstash:
+  #   image: library/logstash:6.5.0
+  #   volumes:
+  #     - ./suricata-log:/var/log/suricata # To get and parse suricata-logs
+  #     - ./elk_config/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+  #     - ./elk_config/logstash/pipeline:/usr/share/logstash/pipeline:ro
+  #   ports:
+  #     - 5000/udp
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #   networks:
+  #     - master
+  #   depends_on:
+  #     - elasticsearch
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+
+  # logspout:
+  #   image: bekt/logspout-logstash
+  #   environment:
+  #     ROUTE_URIS: 'logstash://logstash:5000'
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   depends_on:
+  #     - logstash
+  #     - elasticsearch
+  #   deploy:
+  #     restart_policy:
+  #       condition: any
+  #       delay: 10s
+  #   networks:
+  #     - master
+  #   restart: on-failure
+
+  # kibana:
+  #   image: library/kibana:6.5.0
+  #   volumes:
+  #     - ./elk_config/kibana/config/:/usr/share/kibana/config:ro
+  #   ports:
+  #     - 5601
+  #   networks:
+  #     - master
+  #   depends_on:
+  #     - elasticsearch
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #   labels:
+  #     - "traefik.backend=kibana"
+  #     - "traefik.docker.network=${network_name:-masternetwork}"
+  #     - "traefik.frontend.rule=Host:kibana.${BASE_URL:-localhost}" # add another rule with ";Host:host"
+  #     - "traefik.enable=true"
+  #     - "traefik.port=5601"
 
 
 networks:
@@ -158,3 +191,6 @@ networks:
     master:
         name: "${network_name:-masternetwork}"
         driver: overlay
+
+volumes:
+  isolated-files:
