@@ -28,10 +28,10 @@ services:
       - master
   
   firefox:
-    build: firefox
-    ports:
-      - "2255:22"
+    build: firefox-vnc
     image: vertoforce/firefox-forensics
+    ports:
+      - "5900:5900"
     volumes:
       - isolated-files:/isolated-files
       - ./data:/data
