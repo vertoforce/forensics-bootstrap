@@ -6,9 +6,8 @@
 # VERSION               0.1
 # DOCKER-VERSION        0.2
 
-FROM	ubuntu:12.04
-# make sure the package repository is up to date
-# RUN	echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+FROM	debian:sid
+
 RUN	apt-get update
 
 # Install vnc, xvfb in order to create a 'fake' display and firefox

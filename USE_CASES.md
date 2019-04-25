@@ -22,3 +22,5 @@ Simply connect via VNC to vnc://127.0.0.1:5900
 ```
 open vnc://127.0.0.1:5900
 ```
+
+The password is `1234`
