@@ -17,14 +17,8 @@ docker-compose exec base bash
 
 # Running isolated firefox
 
-On Mac:
+Simply connect via VNC to vnc://127.0.0.1:5900
 
-* Open XQuartz
-* Connect to the local docker container with X11 forwarding
 ```
-ssh root@localhost -p 2255 -Y
-```
-* Run firefox and the X window should appear
-```
-firefox
+open vnc://127.0.0.1:5900
 ```
