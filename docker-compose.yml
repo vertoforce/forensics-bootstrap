@@ -26,12 +26,17 @@ services:
       - ./data:/data
     networks:
       - master
-  
+
   firefox:
     build: firefox-vnc
     image: vertoforce/firefox-forensics
     ports:
       - "5900:5900"
+  
+  desktop:
+    image: garland/dockerfile-ubuntu-gnome
+    ports:
+      - "5901:5901"
     volumes:
       - isolated-files:/isolated-files
       - ./data:/data
