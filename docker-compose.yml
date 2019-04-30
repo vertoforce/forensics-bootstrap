@@ -191,8 +191,6 @@ services:
 
 
 networks:
-    # Network mostly needed for swarm
-    # Set to bridge to test locally and have ports be outside accessible
     master:
         name: "${network_name:-masternetwork}"
         driver: overlay
