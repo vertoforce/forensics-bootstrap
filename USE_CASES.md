@@ -36,3 +36,35 @@ open vnc://127.0.0.1:5901
 ```
 
 The password is `1234`
+
+
+# Bringing up another completely isolated container
+
+If you for example needed another completely isolated docker container with no network access and just access to isolated files for example, simply add a network to the docker compose:
+
+```
+networks:
+    master:
+        name: "${network_name:-masternetwork}"
+        driver: overlay
+    isolated: # <- Add this
+```
+
+Then create a new microservice on that network with access to the isolated files.  Add this to the docker-compose `services` section.
+
+```
+  base-isolated:
+    image: vertoforce/forensics-base
+    command: tail -f /dev/null
+    build: forensics_base
+    volumes:
+      - isolated-files:/isolated-files
+    networks:
+      - isolated
+```
+
+You can then re-bring up the stack and it will come up, or you can just bring up that one microservice using:
+
+```
+docker-compose up base-isolated
+```
