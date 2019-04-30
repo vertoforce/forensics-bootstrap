@@ -11,11 +11,12 @@ This is my Digital Forensics 2 final project
 ## Features
 
 * Isolated environment for forensics examination that can easily be nuked and rebuilt with minimal effort.
-    * Starting environment is clean and deterministic with clear configuration defining the entire environment making documentation of forensics environment simple and easy
+    * Starting environment is clean and deterministic with clear configuration defining the entire environment making documentation of forensics environment simple and easy, especially for formal court cases
 * Separation between isolated file storage and local folder accessible by all docker images
-* Easy file access / sharing between otherwise isolated containers
-* Easily separable networks to network-isolate a container
-* Powerful tools run in docker meaning no setup or dependency collision
+    * Easy file access / sharing between otherwise isolated containers
+    * Easily separable networks to network-isolate a container
+* One line deployment
+    * Powerful tools run in docker meaning no setup or dependency collision
 
 ## Start
 
@@ -30,11 +31,11 @@ There are two main stores of files inside the forensics workstation, `isolated f
 
 ### Normal files
 
-`Normal files` are stored at `/data` in each container and is also accesible via the local `./data` folder.
+`Normal files` are stored at `/data` in each container and is also accessible via the local `./data` folder.
 
 ### Isolated files
 
-`Isolated files` are stored at `/isolated-files` and are stored in a docker container, not accessible via the local filesystem unless you mount the docker volume.  The purpose of this is for sensitive files that you don't want locally accessible incase your anti-virus were to mess with it or to avoid harm to your computer.  Access this via the droppy microservice described below http://droppy.localhost
+`Isolated files` are stored at `/isolated-files` and are stored in a docker container, not accessible via the local filesystem unless you mount the docker volume.  The purpose of this is for sensitive files that you don't want locally accessible in case your anti-virus were to mess with it or to avoid harm to your computer.  Access this via the droppy microservice described below http://droppy.localhost
 
 To remove the isolated files volume and start over, bring down the stack and remove the docker volume
 ```
