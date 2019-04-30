@@ -2,15 +2,15 @@
 
 This is my Digital Forensics 2 final project
 
-**Problem**: Creating and managing a complex full forensics lab is complex and difficult.
+**Problem**: Creating and managing a full forensics lab is complex and difficult.
 
-**Solution**: A docker based forensics lab that can be brought up in one command and will provide lots of forensics tools in an isolated environment
+**Solution**: A docker based forensics lab that can be brought up in one command and provides forensics tools in an isolated environment.
 
 # Usage
 
 ## Features
 
-* Isolated environment for forensics examination that can easily be nuked and rebuild with minimal effort.
+* Isolated environment for forensics examination that can easily be nuked and rebuilt with minimal effort.
     * Starting environment is clean and deterministic with clear configuration defining the entire environment making doucmetation of forensics environment simple and easy
 * Separation between isolated file storage and local folder accessible by all docker images
 * Easy file access / sharing between otherwise isolated containers
