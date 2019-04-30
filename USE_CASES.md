@@ -15,12 +15,24 @@ docker-compose exec base bash
     * `fdisk`
     * `exif-tool`
 
-# Running isolated firefox
+# Using forensics tools
 
-Simply connect via VNC to vnc://127.0.0.1:5900
+See the note on "Examining disk image."  Once you are inside the main docker image, you should have lots of forensics tools available and access to regular and isolated files
+
+# Running isolated firefox / desktop
+
+Simply connect via VNC to vnc://127.0.0.1:5901 to a virtual desktop
 
 ```
 open vnc://127.0.0.1:5900
+```
+
+The password is `acoman`
+
+To just connect to a virtual firefox setup:
+
+```
+open vnc://127.0.0.1:5901
 ```
 
 The password is `1234`
