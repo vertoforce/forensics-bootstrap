@@ -11,11 +11,11 @@ This is my Digital Forensics 2 final project
 ## Features
 
 * Isolated environment for forensics examination that can easily be nuked and rebuilt with minimal effort.
-    * Starting environment is clean and deterministic with clear configuration defining the entire environment making doucmetation of forensics environment simple and easy
+    * Starting environment is clean and deterministic with clear configuration defining the entire environment making documentation of forensics environment simple and easy
 * Separation between isolated file storage and local folder accessible by all docker images
 * Easy file access / sharing between otherwise isolated containers
-* Easily separatable networks to network-isolate a container
-* Powerful tools run in docker meaning no setup or depedency collision
+* Easily separable networks to network-isolate a container
+* Powerful tools run in docker meaning no setup or dependency collision
 
 ## Start
 
